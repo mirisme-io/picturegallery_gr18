@@ -15,8 +15,11 @@ else{
     if (isset ($_POST['pictures_name'])){
         $pictures_name = $_POST['pictures_name'];
         
-        $sql2 = "DELETE FROM pictures WHERE pictures_name = '{$pictures_name}'";
-        if (mysqli_query ($connection, $sql2)){
+        // group addition: just add a prepared statement
+        $sql2 = $connection->prepare("DELETE FROM pictures WHERE pictures_name = ?");
+        $sql2->bind_param("s", $pictures_name);
+        $sql2->execute();
+        if (not $sql2->error){
             $path = "uploads/" . $pictures_name;
             if (unlink ($path)){
                 echo "Removed picture " . $path . "<br>";
