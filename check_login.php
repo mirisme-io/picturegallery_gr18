@@ -13,8 +13,10 @@ else{
     $username = $_POST['username'];
     $password = $_POST['pass'];
 
-    $sql1 = "SELECT users_username, users_password FROM users WHERE users_username = '{$username}' AND users_password = '{$password}'";
-
+    // group addition: just add a prepared statement
+    $sql1 = $connection->prepare("SELECT users_username, users_password FROM users WHERE users_username = ? AND users_password = ?");
+    $sql1->bind_param("ss", $username, $password);
+    $sql1->execute();
     $result = mysqli_query ($connection, $sql1) or die (mysqli_error ($connection));
 
     if (mysqli_num_rows ($result) > 0){
@@ -22,8 +24,6 @@ else{
             $_SESSION['username'] = $row['users_username'];
             include 'includes/navbar.html';
             include 'includes/logged.php';
-            
-	 
         }
     }
     else{
@@ -31,6 +31,7 @@ else{
         include 'includes/notlogged.php';
         
     }
+    // end of group addition
 }
 
 mysqli_close($connection);
